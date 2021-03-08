@@ -1,0 +1,48 @@
+{
+  "name": "@shekhar.raval/amqp",
+  "version": "0.0.0",
+  "description": "Rabbit MQ typescript wrapper",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "scripts": {
+    "clean": "rimraf dist/",
+    "build": "npm run clean && tsc -p tsconfig.build.json",
+    "start": "ts-node -r tsconfig-paths/register src/index.ts",
+    "dev": "nodemon",
+    "pub": "npm version patch && npm run build && npm publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raval-shekhar/amqp.git"
+  },
+  "keywords": [
+    "ampq",
+    "amqp-ts",
+    "rabbit-mq",
+    "typescript",
+    "queue"
+  ],
+  "author": "RAVAL SHEKHAR",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/raval-shekhar/amqp.git/issues"
+  },
+  "homepage": "https://github.com/raval-shekhar/amqp.git#readme",
+  "dependencies": {
+    "amqp-connection-manager": "^3.2.2",
+    "amqplib": "^0.7.0",
+    "rxjs": "^6.6.6"
+  },
+  "devDependencies": {
+    "@types/amqp-connection-manager": "^2.0.10",
+    "@types/amqplib": "^0.5.17",
+    "nodemon": "^2.0.7",
+    "rimraf": "^3.0.2",
+    "ts-node": "^9.1.1",
+    "tsconfig-paths": "^3.9.0",
+    "typescript": "^4.2.3"
+  }
+}

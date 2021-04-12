@@ -2,11 +2,13 @@ import { EMPTY, Subject, throwError } from 'rxjs';
 import { catchError, take, timeoutWith } from 'rxjs/operators'
 import amqpcon from 'amqp-connection-manager';
 import amqplib from 'amqplib';
+import { Logger } from '@shekhar.raval/logger';
 
 import { getHandlerForLegacyBehavior, MessageHandlerErrorBehavior } from './error.helper';
 import { ConnectionInitOptions, MessageHandlerOptions, RabbitMQConfig } from './rabbitmq.interface';
 import { SubscribeResponse, Nack } from './handler.response';
 
+const logger = new Logger('AMQP');
 
 const DIRECT_REPLY_QUEUE = 'amq.rabbitmq.reply-to';
 
@@ -81,7 +83,7 @@ export class AmqpConnection {
   }
 
   private async initCore(): Promise<void> {
-    console.log('Trying to connect to a RabbitMQ broker');
+    logger.info('Trying to connect to a RabbitMQ broker');
 
     this._managedConnection = amqpcon.connect(
       Array.isArray(this.config.uri) ? this.config.uri : [this.config.uri],
@@ -90,7 +92,7 @@ export class AmqpConnection {
 
     this._managedConnection.on('connect', ({ connection }) => {
       this._connection = connection;
-      console.log('Successfully connected to a RabbitMQ broker');
+      logger.info('Successfully connected to a RabbitMQ broker');
     });
 
     this._managedChannel = this._managedConnection.createChannel({
@@ -98,15 +100,15 @@ export class AmqpConnection {
     });
 
     this._managedChannel.on('connect', () =>
-      console.log('Successfully connected a RabbitMQ channel')
+      logger.info('Successfully connected a RabbitMQ channel')
     );
 
     this._managedChannel.on('error', (err, { name }) =>
-      console.log(`Failed to setup a RabbitMQ channel - name: ${name} / error: ${err.message} ${err.stack}`)
+      logger.info(`Failed to setup a RabbitMQ channel - name: ${name} / error: ${err.message} ${err.stack}`)
     );
 
     this._managedChannel.on('close', () =>
-      console.log('Successfully closed a RabbitMQ channel')
+      logger.info('Successfully closed a RabbitMQ channel')
     );
 
     await this._managedChannel.addSetup((c: any) => this.setupInitChannel(c));
@@ -148,6 +150,7 @@ export class AmqpConnection {
   public async publish(exchange: string, routingKey: string, message: any, options?: amqplib.Options.Publish) {
     // source amqplib channel is used directly to keep the behavior of throwing connection related errors
     if (!this.managedConnection.isConnected() || !this._channel) {
+      logger.error('AMQP connection is not available');
       throw new Error('AMQP connection is not available');
     }
     let buffer: Buffer;
@@ -185,6 +188,7 @@ export class AmqpConnection {
     await channel.consume(queue, async (msg) => {
       try {
         if (msg == null) {
+          logger.error('Reciebed null message')
           throw new Error('Received null message');
         }
         const response = await this.handleMessage(handler, msg, allowNonJsonMessages);
@@ -195,6 +199,7 @@ export class AmqpConnection {
         }
 
         if (response) {
+          logger.error('Received response from subscribe handler. Subscribe handlers should only return void');
           throw new Error('Received response from subscribe handler. Subscribe handlers should only return void');
         }
         channel.ack(msg);

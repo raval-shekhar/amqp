@@ -1,6 +1,6 @@
 {
   "name": "@shekhar.raval/amqp",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Rabbit MQ typescript wrapper",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

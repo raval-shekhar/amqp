@@ -166,14 +166,14 @@ export class AmqpConnection {
     this._channel.publish(exchange, routingKey, buffer, options);
   }
 
-  public async createSubscriber<T>(handler: (msg: T | undefined, rawMessage?: amqplib.ConsumeMessage) =>
+  public async createSubscriber<T>(handler: (msg: T, rawMessage?: amqplib.ConsumeMessage) =>
     Promise<SubscribeResponse>, msgOptions: MessageHandlerOptions) {
     return this._managedChannel.addSetup((channel: any) =>
       this.setupSubscriberChannel<T>(handler, msgOptions, channel)
     );
   }
 
-  private async setupSubscriberChannel<T>(handler: (msg: T | undefined, rawMessage?: amqplib.ConsumeMessage) =>
+  private async setupSubscriberChannel<T>(handler: (msg: T, rawMessage?: amqplib.ConsumeMessage) =>
     Promise<SubscribeResponse>, msgOptions: MessageHandlerOptions, channel: amqplib.ConfirmChannel): Promise<void> {
     const { exchange, routingKey, allowNonJsonMessages } = msgOptions;
 
@@ -214,9 +214,9 @@ export class AmqpConnection {
     });
   }
 
-  private handleMessage<T, U>(handler: (msg: T | undefined, rawMessage?: amqplib.ConsumeMessage) =>
+  private handleMessage<T, U>(handler: (msg: T, rawMessage?: amqplib.ConsumeMessage) =>
     Promise<U>, msg: amqplib.ConsumeMessage, allowNonJsonMessages?: boolean) {
-    let message: T | undefined = undefined;
+    let message: any = undefined;
     if (msg.content) {
       if (allowNonJsonMessages) {
         try {

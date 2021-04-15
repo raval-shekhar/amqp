@@ -60,7 +60,7 @@ export interface MessageHandlerOptions {
 }
 
 export interface IMessage {
-  data: Record<any, any> | undefined;
-  headers?: Record<any, any> | undefined;
+  data: Record<any, any>;
+  headers?: Record<any, any>;
   correlationId?: string
 }

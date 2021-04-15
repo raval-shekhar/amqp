@@ -1,13 +1,7 @@
 import { ConsumeMessage } from 'amqplib';
 import { AmqpConnection } from './connection';
 import { SubscribeResponse } from "./handler.response";
-import { MessageHandlerOptions } from './rabbitmq.interface';
-
-interface IMessage {
-  data: Record<any, any> | undefined;
-  headers?: Record<any, any> | undefined;
-  correlationId?: string
-}
+import { IMessage, MessageHandlerOptions } from './rabbitmq.interface';
 
 export abstract class Listener <T extends MessageHandlerOptions>{
   private connection: AmqpConnection;

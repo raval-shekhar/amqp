@@ -1,14 +1,10 @@
 import { Options } from 'amqplib';
 
 import { AmqpConnection } from './connection';
+import { IMessage } from './rabbitmq.interface';
 
-interface IMessage {
-  data: Record<any, any> | undefined;
-  headers?: Record<any, any> | undefined;
-  correlationId?: string
-}
 
-interface IPublishOptions {
+export interface IPublishOptions {
   exchange: string;
   routingKey: string;
   options?: Options.Publish
@@ -23,6 +19,6 @@ export abstract class Publisher <T extends IPublishOptions>{
   }
 
   publish(message: IMessage) {
-    this.connection.publish(this.options.exchange, this.options.routingKey, message, );
+    this.connection.publish(this.options.exchange, this.options.routingKey, message, this.options.options);
   }
 }

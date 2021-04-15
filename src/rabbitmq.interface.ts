@@ -58,3 +58,9 @@ export interface MessageHandlerOptions {
   errorHandler?: MessageErrorHandler;
   allowNonJsonMessages?: boolean;
 }
+
+export interface IMessage {
+  data: Record<any, any> | undefined;
+  headers?: Record<any, any> | undefined;
+  correlationId?: string
+}
